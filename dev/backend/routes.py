@@ -2,6 +2,8 @@ import os
 import shutil
 from flask import request, jsonify
 
+from read_CSV import read
+
 def setup_routes(app):
     @app.route('/', methods=['GET'])
     def index():
@@ -31,3 +33,9 @@ def setup_routes(app):
             shutil.rmtree(UPLOAD_FOLDER)
         os.makedirs(UPLOAD_FOLDER)
         return jsonify({"message": "Uploads directory cleared"}), 200
+
+    @app.route('/read-csv', methods=['GET'])
+    def read_csv():
+        read()
+        return jsonify({"message": "read csv"}), 200
+    
