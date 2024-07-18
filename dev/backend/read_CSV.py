@@ -11,9 +11,7 @@ def read_CSV(passes):
     columns=[]
     encoding=''
     if length==1:
-        print(passes[0])
         encoding=check_encoding(passes[0])
-        print(encoding)
         df=pd.read_csv(passes[0], encoding=encoding)
         Numpy=df.to_numpy()
         columns=df.columns.values
@@ -21,9 +19,7 @@ def read_CSV(passes):
         dfs[1].append(columns)
     else:
         for i in range(length):
-            print(passes[i])
             encoding=check_encoding(passes[i])
-            print(encoding)
             df=pd.read_csv(passes[i], encoding=encoding)
             Numpy=df.to_numpy()
             columns=df.columns.values
