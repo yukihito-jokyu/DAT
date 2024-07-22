@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
+import ButtonAppBar from "./uicomponents/MenuAppBar";
 
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Analysis from "./Analysis/Analysis";
 
 function App() {
   const [message, setMessage] = useState('');
@@ -21,7 +24,13 @@ function App() {
 
   return (
     <div>
-      {message}
+      <Router>
+        <Routes>
+          <Route path="/analysis" element={<Analysis />} />
+        </Routes>
+      </Router>
+      {/* {message} */}
+      {/* <ButtonAppBar /> */}
     </div>
   );
 }
