@@ -1,0 +1,29 @@
+/* Analysis.js */
+
+.analysis-wrapper {
+  display: flex;
+}
+
+/* Custom.js */
+
+.custom-wrapper {
+  height: 100vh;
+  width: 350px;
+  background-color: rgb(213, 213, 251);
+}
+
+/* Plt.js */
+
+.plt-wrapper {
+  height: 100vh;
+  width: calc(100% - 800px);
+  background-color: rgb(241, 208, 208);
+}
+
+/* Chat.js */
+
+.chat-wrapper {
+  height: 100vh;
+  width: 450px;
+  background-color: rgb(217, 238, 163);
+}

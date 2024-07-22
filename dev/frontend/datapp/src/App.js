@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import UploadCSV from './components/UploadCSV/UploadCSV';
 import SelectColumn from './components/SelectColumn/SelectColumn';
 import Fetch from './components/fetch';
+import Analysis from './Analysis/Analysis';
 
 function App() {
   return (
@@ -11,7 +12,7 @@ function App() {
       <Routes>
         <Route path='/fetch' element={<Fetch />} />
         <Route path='/upload-csv' element={<UploadCSV />} />
-        <Route path='/select-column' element={<SelectColumn />} />
+        <Route path='/analysis' element={<Analysis />} />
       </Routes>
     </BrowserRouter>
   );
