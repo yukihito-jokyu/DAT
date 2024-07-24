@@ -5,7 +5,7 @@ import Scatter from './Scatter'
 import Histogram from './Histogram'
 import Boxhidediagram from './Boxhidediagram'
 
-function Custom({ selectionScatter, selectionHistogram, selectionBoxhidediagram, scatter, histogram, boxhidediagram }) {
+function Custom({ selectionScatter, selectionHistogram, selectionBoxhidediagram, scatter, histogram, boxhidediagram, setImage }) {
   return (
     <div className='custom-wrapper'>
       <div className='plt-selection'>
@@ -21,9 +21,9 @@ function Custom({ selectionScatter, selectionHistogram, selectionBoxhidediagram,
           </div>
         </div>
       </div>
-      {scatter && <Scatter />}
-      {histogram && <Histogram />}
-      {boxhidediagram && <Boxhidediagram />}
+      {scatter && <Scatter setImage={setImage} />}
+      {histogram && <Histogram setImage={setImage} />}
+      {boxhidediagram && <Boxhidediagram setImage={setImage} />}
     </div>
   )
 }

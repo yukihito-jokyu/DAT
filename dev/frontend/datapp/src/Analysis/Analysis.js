@@ -29,8 +29,8 @@ function Analysis() {
   }
   return (
     <div className='analysis-wrapper'>
-      <Custom selectionScatter={selectionScatter} selectionHistogram={selectionHistogram} selectionBoxhidediagram={selectionBoxhidediagram} scatter={scatter} histogram={histogram} boxhidediagram={boxhidediagram} />
-      <Plt />
+      <Custom selectionScatter={selectionScatter} selectionHistogram={selectionHistogram} selectionBoxhidediagram={selectionBoxhidediagram} scatter={scatter} histogram={histogram} boxhidediagram={boxhidediagram} setImage={setImage} />
+      <Plt image={image} />
       <Chat />
     </div>
   )

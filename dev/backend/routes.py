@@ -1,6 +1,7 @@
 import os
 import shutil
-from flask import request, jsonify
+from flask import request, jsonify, send_file
+from data_plt import *
 
 def setup_routes(app):
     @app.route('/', methods=['GET'])
@@ -31,3 +32,37 @@ def setup_routes(app):
             shutil.rmtree(UPLOAD_FOLDER)
         os.makedirs(UPLOAD_FOLDER)
         return jsonify({"message": "Uploads directory cleared"}), 200
+    
+
+    @app.route('/get_quantitative', methods=['POST'])
+    def get_quantitative():
+        quantitative_list = read_quantitative()
+        print(quantitative_list)
+        return jsonify({'quantitative_variables': quantitative_list})
+    
+    @app.route('/get_qualitative', methods=['GET'])
+    def get_qualitative():
+        qualitative_list = read_qualitative()
+        return jsonify({'qualitative_variables': qualitative_list})
+
+
+    @app.route('/scatter', methods=['POST'])
+    def make_scatter():
+        data = request.get_json()
+        print('data', data)
+        image_data = plot_scatter(data)
+        return jsonify({'image_data': image_data})
+    
+    @app.route('/hist', methods=['POST'])
+    def make_hist():
+        data = request.get_json()
+        print('data', data)
+        image_data = plot_hist(data)
+        return jsonify({'image_data': image_data})
+    
+    @app.route('/box', methods=['POST'])
+    def make_box():
+        data = request.get_json()
+        print('data', data)
+        image_data = plot_box(data)
+        return jsonify({'image_data': image_data})
