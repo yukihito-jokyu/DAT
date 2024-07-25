@@ -73,7 +73,7 @@ const UploadCSV = () => {
 
     // "次へ"ボタンのクリック処理
     const handleNext = () => {
-        navigate('/config');
+        navigate('/select-column');
     };
 
     return (

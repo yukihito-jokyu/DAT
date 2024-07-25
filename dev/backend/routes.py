@@ -3,6 +3,21 @@ import shutil
 from flask import request, jsonify, send_file
 from data_plt import *
 
+from read_CSV import read
+
+from flask_cors import CORS
+import google.generativeai as genai
+
+from dotenv import load_dotenv
+
+# 環境変数を読み込む
+load_dotenv()
+
+# APIキーを設定
+GENAI_API_KEY = os.getenv('GENAI_API_KEY')
+genai.configure(api_key=GENAI_API_KEY)
+model = genai.GenerativeModel('gemini-pro')
+
 def setup_routes(app):
     @app.route('/', methods=['GET'])
     def index():
@@ -31,8 +46,8 @@ def setup_routes(app):
         if os.path.exists(UPLOAD_FOLDER):
             shutil.rmtree(UPLOAD_FOLDER)
         os.makedirs(UPLOAD_FOLDER)
-        return jsonify({"message": "Uploads directory cleared"}), 200
-    
+        return jsonify({"message": "Uploads directory cleared"}), 200    
+
 
     @app.route('/get_quantitative', methods=['POST'])
     def get_quantitative():
@@ -66,3 +81,19 @@ def setup_routes(app):
         print('data', data)
         image_data = plot_box(data)
         return jsonify({'image_data': image_data})
+    @app.route('/read-csv', methods=['GET'])
+    def read_csv():
+        read()
+        return jsonify({"message": "read csv"}), 200
+            
+    @app.route('/api/chat', methods=['POST'])
+    def chat():
+        data = request.json
+        message = data.get('message')
+        if not message:
+            return jsonify({'reply': 'メッセージが空です。'}), 400
+        try:
+            reply = model.generate_content(message)
+            return jsonify({'reply': reply.text})
+        except Exception as e:
+            return jsonify({'reply': f'エラーが発生しました: {str(e)}'}), 500
