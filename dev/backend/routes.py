@@ -2,6 +2,7 @@ import os
 import shutil
 from flask import request, jsonify, send_file
 from data_plt import *
+from data_utils import get_data_info, get_miss_columns, change_umeric_to_categorical, make_pie
 
 from read_CSV import read
 
@@ -48,19 +49,21 @@ def setup_routes(app):
         os.makedirs(UPLOAD_FOLDER)
         return jsonify({"message": "Uploads directory cleared"}), 200    
 
-
+    
+    # 質的変数のカラムをリストで取得
     @app.route('/get_quantitative', methods=['POST'])
     def get_quantitative():
         quantitative_list = read_quantitative()
         print(quantitative_list)
         return jsonify({'quantitative_variables': quantitative_list})
     
+    # 量的変数のカラムをリストで取得
     @app.route('/get_qualitative', methods=['GET'])
     def get_qualitative():
         qualitative_list = read_qualitative()
         return jsonify({'qualitative_variables': qualitative_list})
 
-
+    # 散布図
     @app.route('/scatter', methods=['POST'])
     def make_scatter():
         data = request.get_json()
@@ -68,6 +71,7 @@ def setup_routes(app):
         image_data = plot_scatter(data)
         return jsonify({'image_data': image_data})
     
+    # ヒストグラム
     @app.route('/hist', methods=['POST'])
     def make_hist():
         data = request.get_json()
@@ -75,12 +79,40 @@ def setup_routes(app):
         image_data = plot_hist(data)
         return jsonify({'image_data': image_data})
     
+    # 箱ひげ図
     @app.route('/box', methods=['POST'])
     def make_box():
         data = request.get_json()
         print('data', data)
         image_data = plot_box(data)
         return jsonify({'image_data': image_data})
+    
+    # データの基本情報の取得
+    @app.route('/get_data_info', methods=['GET'])
+    def get_data():
+        send_data = get_data_info()
+        return jsonify(send_data)
+    
+    # 欠損値があるカラムを取得
+    @app.route('/get_miss_columns', methods=['GET'])
+    def get_miss():
+        send_data = get_miss_columns()
+        return jsonify(send_data)
+    
+    # カテゴリカルデータへ変換
+    @app.route('/change_umeric_to_categorical', methods=['POST'])
+    def change_to_categorical():
+        change_umeric_to_categorical()
+        return jsonify({'message': 'change successfully'})
+    
+    # 円グラフの取得
+    @app.route('/get_pie', methods=['POST'])
+    def get_pie():
+        data = request.get_json()
+        image_data = make_pie(data)
+        return jsonify({'image_data': image_data})
+
+    
     @app.route('/read-csv', methods=['GET'])
     def read_csv():
         read()
