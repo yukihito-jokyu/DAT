@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import TableComponent from './TableComponet';
 
 function DataInfo() {
     const [data, setData] = useState({ qualitative: [], quantitative: [] });
@@ -34,45 +35,8 @@ function DataInfo() {
 
     return (
         <div>
-            <h2>質的データ</h2>
-            <table>
-                <thead>
-                    <tr>
-                        {data.qualitative.length > 0 && Object.keys(data.qualitative[0]).map((key, idx) => (
-                            <th key={idx}>{key}</th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.qualitative.map((row, idx) => (
-                        <tr key={idx}>
-                            {Object.values(row).map((value, idx2) => (
-                                <td key={idx2}>{value}</td>
-                            ))}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-
-            <h2>量的データ</h2>
-            <table>
-                <thead>
-                    <tr>
-                        {data.quantitative.length > 0 && Object.keys(data.quantitative[0]).map((key, idx) => (
-                            <th key={idx}>{key}</th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.quantitative.map((row, idx) => (
-                        <tr key={idx}>
-                            {Object.values(row).map((value, idx2) => (
-                                <td key={idx2}>{value}</td>
-                            ))}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <TableComponent title="質的データ" data={data.qualitative} />
+            <TableComponent title="量的データ" data={data.quantitative} />
         </div>
     );
 }
