@@ -2,7 +2,7 @@ import os
 import shutil
 from flask import request, jsonify, send_file
 from data_plt import *
-from data_utils import get_data_info, get_miss_columns, change_umeric_to_categorical, make_pie
+from data_utils import get_data_info, get_miss_columns, change_umeric_to_categorical, make_pie, make_feature_value, feature_value_analysis, impute_numeric, impute_categorical
 
 from read_CSV import read
 
@@ -100,7 +100,7 @@ def setup_routes(app):
         return jsonify(send_data)
     
     # カテゴリカルデータへ変換
-    @app.route('/change_umeric_to_categorical', methods=['POST'])
+    @app.route('/change_numeric_to_categorical', methods=['POST'])
     def change_to_categorical():
         change_umeric_to_categorical()
         return jsonify({'message': 'change successfully'})
@@ -129,3 +129,36 @@ def setup_routes(app):
             return jsonify({'reply': reply.text})
         except Exception as e:
             return jsonify({'reply': f'エラーが発生しました: {str(e)}'}), 500
+
+
+    # 特徴量の作成
+    @app.route('/make_feature', methods=['POST'])
+    def make_feature():
+        data = request.get_json()
+        make_feature_value(data)
+        return jsonify({'message': 'make successfully'})
+    
+    # 特定の特徴量についての分析
+    @app.route('/feature_analysis', methods=['POST'])
+    def feature_analysis():
+        data = request.get_json()
+        image_data = feature_value_analysis()
+        return jsonify({'image_data': image_data})
+    
+    # 数値データの欠損値の補完
+    @app.route('/complement/numeric', methods=['POST'])
+    def complement_numeric():
+        data = request.get_json()
+        column = data['column_name']
+        methods = data['complementary_methods']
+        impute_numeric(column, methods)
+        return jsonify({'message': 'complement numeric successfully'})
+
+    # カテゴリカルデータの欠損値の補完
+    @app.route('/complement/categorical', methods=['POST'])
+    def complement_categorical():
+        data = request.get_json()
+        column = data['column_name']
+        methods = data['complementary_methods']
+        impute_categorical(column, methods)
+        return jsonify({'message': 'complement categorical successfully'})
