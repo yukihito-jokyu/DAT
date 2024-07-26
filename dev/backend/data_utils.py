@@ -7,6 +7,23 @@ import base64
 import matplotlib
 matplotlib.use('Agg')
 
+def format_value(value):
+    if isinstance(value, float):
+        if abs(value) >= 10:
+            return int(value)
+        return round(value, 3)
+    return value
+
+def convert_to_serializable(obj):
+    if isinstance(obj, (np.integer, np.floating)):
+        return format_value(obj.item())
+    elif isinstance(obj, (np.ndarray, pd.Series)):
+        return obj.tolist()
+    elif pd.isna(obj):
+        return None
+    return obj
+
+
 def get_df():
     return pd.read_csv('./uploads/demo.csv')
 
@@ -17,36 +34,40 @@ def entropy(series):
 # データの詳細情報の取得
 def get_data_info():
     df = get_df()
-    # 箱
-    qualitative_list = []   # 量的変数
-    quantitative_list = []  # 質的変数
+    qualitative_list = []
+    quantitative_list = []
 
     for col in df.columns:
-        info_dict = {}
-        info_dict['データ型'] = df[col].dtype
-        info_dict['ユニークな値の数'] = df[col].nunique()
-        info_dict['欠損値の数'] = df[col].isnull().sum()
-        info_dict['欠損値の割合'] = df[col].isnull().sum() /len(df)
+        common_info = {
+            'データ型': str(df[col].dtype),
+            'ユニークな値の数': convert_to_serializable(df[col].nunique()),
+            '欠損値の数': convert_to_serializable(df[col].isnull().sum()),
+            '欠損値の割合': format_value(convert_to_serializable(df[col].isnull().sum() / len(df)))
+        }
 
         if df[col].dtype == 'int64' or df[col].dtype == 'float64':
-            info_dict['平均値'] = df[col].mean()
-            info_dict['中央値'] = df[col].median()
-            info_dict['標準偏差'] = df[col].std()
-            info_dict['最小値'] = df[col].min()
-            info_dict['最大値'] = df[col].max()
-            info_dict['第1四分位数'] = df[col].quantile(0.25)
-            info_dict['第3四分位数'] = df[col].quantile(0.75)
-            info_dict['歪度'] = df[col].skew()
-            info_dict['尖度'] = df[col].kurtosis()
-            info_dict['変動係数'] = df[col].std() / df[col].mean() if df[col].mean() != 0 else np.nan
-            qualitative_list.append(info_dict)
+            quantitative_info = {
+                '平均値': format_value(convert_to_serializable(df[col].mean())),
+                '中央値': format_value(convert_to_serializable(df[col].median())),
+                '標準偏差': format_value(convert_to_serializable(df[col].std())),
+                '最小値': format_value(convert_to_serializable(df[col].min())),
+                '最大値': format_value(convert_to_serializable(df[col].max())),
+                '第1四分位数': format_value(convert_to_serializable(df[col].quantile(0.25))),
+                '第3四分位数': format_value(convert_to_serializable(df[col].quantile(0.75))),
+                '歪度': format_value(convert_to_serializable(df[col].skew())),
+                '尖度': format_value(convert_to_serializable(df[col].kurtosis())),
+                '変動係数': format_value(convert_to_serializable(df[col].std() / df[col].mean() if df[col].mean() != 0 else np.nan))
+            }
+            quantitative_list.append({'column_name': col, 'common': common_info, 'data': quantitative_info})
         else:
-            info_dict['最頻値'] = df[col].mode().iloc[0] if not df[col].mode().empty else np.nan
-            info_dict['最頻値の出現回数'] = df[col].value_counts().iloc[0] if not df[col].value_counts().empty else np.nan
-            info_dict['最頻値の割合'] = (df[col].value_counts().iloc[0] / len(df)) if not df[col].value_counts().empty else np.nan
-            info_dict['カテゴリ数'] = df[col].nunique()
-            info_dict['エントロピー'] = entropy(df[col])
-            quantitative_list.append(info_dict)
+            qualitative_info = {
+                '最頻値': convert_to_serializable(df[col].mode().iloc[0] if not df[col].mode().empty else np.nan),
+                '最頻値の出現回数': convert_to_serializable(df[col].value_counts().iloc[0] if not df[col].value_counts().empty else np.nan),
+                '最頻値の割合': format_value(convert_to_serializable(df[col].value_counts().iloc[0] / len(df) if not df[col].value_counts().empty else np.nan)),
+                'カテゴリ数': convert_to_serializable(df[col].nunique()),
+                'エントロピー': format_value(convert_to_serializable(entropy(df[col])))
+            }
+            qualitative_list.append({'column_name': col, 'common': common_info, 'data': qualitative_info})
     
     send_data = {
         "qualitative": qualitative_list,
