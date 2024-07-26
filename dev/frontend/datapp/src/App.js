@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import UploadCSV from './components/UploadCSV/UploadCSV';
-import SelectColumn from './components/SelectColumn/SelectColumn';
 import Fetch from './components/fetch';
 import Analysis from './Analysis/Analysis';
 import DataInfo from './components/DataInfo/DataInfo';
