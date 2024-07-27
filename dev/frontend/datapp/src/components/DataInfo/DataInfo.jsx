@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import TableComponent from './TableComponet';
+import { Box, CircularProgress, Typography, Grid } from '@mui/material';
+import TableComponent from './TableComponent';
 
 function DataInfo() {
     const [data, setData] = useState({ qualitative: [], quantitative: [] });
@@ -26,18 +27,32 @@ function DataInfo() {
     }, []);
 
     if (loading) {
-        return <div>ロード中...</div>;
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+                <CircularProgress />
+            </Box>
+        );
     }
 
     if (error) {
-        return <div>エラー: {error}</div>;
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+                <Typography color="error">エラー: {error}</Typography>
+            </Box>
+        );
     }
 
     return (
-        <div>
-            <TableComponent title="質的データ" data={data.qualitative} />
-            <TableComponent title="量的データ" data={data.quantitative} />
-        </div>
+        <Box p={3}>
+            <Grid container spacing={3}>
+                <Grid item xs={12}>
+                    <TableComponent title="質的データ" data={data.qualitative} />
+                </Grid>
+                <Grid item xs={12}>
+                    <TableComponent title="量的データ" data={data.quantitative} />
+                </Grid>
+            </Grid>
+        </Box>
     );
 }
 
