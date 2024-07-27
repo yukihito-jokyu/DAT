@@ -143,7 +143,7 @@ def setup_routes(app):
     @app.route('/feature_analysis', methods=['POST'])
     def feature_analysis():
         data = request.get_json()
-        image_data = feature_value_analysis()
+        image_data = feature_value_analysis(data)
         return jsonify({'image_data': image_data})
     
     # 数値データの欠損値の補完

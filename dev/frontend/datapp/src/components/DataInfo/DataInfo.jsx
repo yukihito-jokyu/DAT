@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Box, CircularProgress, Typography, Grid } from '@mui/material';
 import TableComponent from './TableComponent';
+import { useNavigate } from 'react-router-dom';
 
 function DataInfo() {
     const [data, setData] = useState({ qualitative: [], quantitative: [] });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -42,14 +44,18 @@ function DataInfo() {
         );
     }
 
+    const handleClick = (columnName, type) => {
+        navigate(`/data-info/${columnName}/${type}`);
+    };
+
     return (
         <Box p={3}>
             <Grid container spacing={3}>
                 <Grid item xs={12}>
-                    <TableComponent title="質的データ" data={data.qualitative} />
+                    <TableComponent title="質的データ" data={data.qualitative} onClick={handleClick} type="qualitative" />
                 </Grid>
                 <Grid item xs={12}>
-                    <TableComponent title="量的データ" data={data.quantitative} />
+                    <TableComponent title="量的データ" data={data.quantitative} onClick={handleClick} type="quantitative" />
                 </Grid>
             </Grid>
         </Box>
