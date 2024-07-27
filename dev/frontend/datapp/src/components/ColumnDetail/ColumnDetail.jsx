@@ -21,6 +21,7 @@ function ColumnDetail() {
             const data = await response.json();
             setImage(data.image_data);
             setLoading(false);
+            console.log(data.image_data)
         };
 
         fetchImage();
