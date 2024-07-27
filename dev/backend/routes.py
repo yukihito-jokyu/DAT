@@ -102,7 +102,8 @@ def setup_routes(app):
     # カテゴリカルデータへ変換
     @app.route('/change_numeric_to_categorical', methods=['POST'])
     def change_to_categorical():
-        change_umeric_to_categorical()
+        data = request.get_json()
+        change_umeric_to_categorical(data)
         return jsonify({'message': 'change successfully'})
     
     # 円グラフの取得

@@ -1,24 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Modal from './Modal';
+import Swal from 'sweetalert2';
+import { Box, Button, Typography, Paper, Card, CardContent } from '@mui/material';
 
 const UploadCSV = () => {
     const [messages, setMessages] = useState([]);
-    const [showModal, setShowModal] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
+    const fileInputRef = useRef(null);
     const navigate = useNavigate();
 
+    // 確認モーダルを表示する関数
+    const showDeleteConfirmModal = () => {
+        return Swal.fire({
+            title: '元のCSVファイルを削除しますか？',
+            showCancelButton: true,
+            confirmButtonText: 'はい',
+            cancelButtonText: 'いいえ',
+        });
+    };
+
     // アップロードディレクトリをクリアする非同期関数
+    const clearUploads = async () => {
+        try {
+            await axios.post('http://localhost:5000/clear-uploads');
+        } catch (error) {
+            console.error('Failed to clear uploads directory:', error);
+        }
+    };
+
     useEffect(() => {
-        const clearUploads = async () => {
-            try {
-                await axios.post('http://localhost:5000/clear-uploads');
-            } catch (error) {
-                console.error('Failed to clear uploads directory:', error);
+        const confirmAndClearUploads = async () => {
+            const result = await showDeleteConfirmModal();
+            if (result.isConfirmed) {
+                await clearUploads();
             }
         };
-        clearUploads();
+        confirmAndClearUploads();
     }, []);
 
     // ファイルが選択された時の処理
@@ -28,7 +46,7 @@ const UploadCSV = () => {
             newFileNames.push(file.name);
         });
         setSelectedFile(files[0]);
-        setShowModal(true);
+        showConfirmModal(files[0]);
     };
 
     // ファイルをアップロードする非同期関数
@@ -42,8 +60,18 @@ const UploadCSV = () => {
                 },
             });
             newMessages.push(response.data.message);
+            Swal.fire({
+                icon: 'success',
+                title: 'アップロード完了',
+                text: response.data.message,
+            });
         } catch (error) {
             newMessages.push(`ファイル ${file.name} のアップロードに失敗しました。`);
+            Swal.fire({
+                icon: 'error',
+                title: 'エラー',
+                text: `ファイル ${file.name} のアップロードに失敗しました。`,
+            });
         }
         setMessages([...messages, ...newMessages]);
     };
@@ -57,58 +85,76 @@ const UploadCSV = () => {
         }
     };
 
-    // モーダルを閉じる処理
-    const handleCloseModal = () => {
-        setShowModal(false);
+    // ファイル選択時の処理
+    const handleFileChange = (e) => {
+        const files = e.target.files;
+        if (files.length > 0) {
+            handleFiles(files);
+        }
     };
 
-    // モーダルの確認ボタンがクリックされた時の処理
-    const handleConfirmModal = () => {
-        setShowModal(false);
-        const newMessages = [];
-        if (selectedFile) {
-            uploadFile(selectedFile, newMessages);
-        }
+    // 確認モーダルを表示する処理
+    const showConfirmModal = (file) => {
+        Swal.fire({
+            title: `${file.name}をアップロードしますか？`,
+            showCancelButton: true,
+            confirmButtonText: 'はい',
+            cancelButtonText: 'いいえ',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const newMessages = [];
+                uploadFile(file, newMessages);
+            }
+        });
     };
 
     // "次へ"ボタンのクリック処理
     const handleNext = () => {
-        navigate('/select-column');
+        if (selectedFile) {
+            navigate('/data-info');
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'エラー',
+                text: 'CSVファイルをアップロードしてください',
+            });
+        }
     };
 
     return (
-        <>
-            <h2>CSVファイルをアップロード</h2>
-            <div
-                onDrop={handleDrop}
-                onDragOver={(e) => e.preventDefault()}
-                style={{
-                    border: '2px dashed #ccc',
-                    padding: '20px',
-                    textAlign: 'center',
-                    marginBottom: '20px',
-                }}
-            >
-                ここにCSVファイルをドラッグアンドドロップ
-            </div>
-            {messages.length > 0 && (
-                <div>
-                    <h3>アップロードメッセージ:</h3>
-                    <ul>
-                        {messages.map((message, index) => (
-                            <li key={index}>{message}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-            <Modal
-                show={showModal}
-                onClose={handleCloseModal}
-                onConfirm={handleConfirmModal}
-                fileName={selectedFile ? selectedFile.name : ''}
-            />
-            <button onClick={handleNext}>次へ</button>
-        </>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+            <Card sx={{ width: 600, p: 2 }}>
+                <CardContent>
+                    <Typography variant="h4" gutterBottom>
+                        CSVファイルをアップロード
+                    </Typography>
+                    <Paper
+                        onClick={() => fileInputRef.current.click()}
+                        onDrop={handleDrop}
+                        onDragOver={(e) => e.preventDefault()}
+                        sx={{
+                            border: '2px dashed #ccc',
+                            p: 4,
+                            textAlign: 'center',
+                            mb: 4,
+                            cursor: 'pointer',
+                        }}
+                    >
+                        ここにCSVファイルをドラッグアンドドロップ
+                    </Paper>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".csv"
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                    />
+                    <Button variant="contained" color="primary" onClick={handleNext} sx={{ mt: 2, width: '100%' }}>
+                        次へ
+                    </Button>
+                </CardContent>
+            </Card>
+        </Box>
     );
 };
 
