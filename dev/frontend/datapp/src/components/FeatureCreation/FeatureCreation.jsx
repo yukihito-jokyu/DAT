@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Box, Button, Typography, Select, MenuItem, TextField, Card, CardContent, Grid } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 const FeatureCreation = () => {
     const [quantitativeColumns, setQuantitativeColumns] = useState([]);
@@ -12,6 +13,7 @@ const FeatureCreation = () => {
     const [formula, setFormula] = useState([]);
     const [newColumnName, setNewColumnName] = useState('');
     const [preview, setPreview] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchQuantitativeColumns = async () => {
@@ -123,6 +125,14 @@ const FeatureCreation = () => {
                 icon: 'success',
                 title: '成功',
                 text: '特徴量が作成されました',
+            }).then(() => {
+                // フォームのリセット
+                setFormula([]);
+                setNewColumnName('');
+                setCurrentNumber(0);
+                setCurrentColumn(quantitativeColumns[0]);
+                setCurrentOperation('addition');
+                setPreview('');
             });
         } catch (error) {
             Swal.fire({
@@ -132,6 +142,10 @@ const FeatureCreation = () => {
             });
             console.error('Failed to create feature:', error);
         }
+    };
+
+    const handleNext = () => {
+        navigate('/analysis');
     };
 
     return (
@@ -225,6 +239,14 @@ const FeatureCreation = () => {
                         sx={{ mt: 2, width: '100%' }}
                     >
                         決定
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={handleNext}
+                        sx={{ mt: 2, width: '100%' }}
+                    >
+                        次へ
                     </Button>
                 </CardContent>
             </Card>

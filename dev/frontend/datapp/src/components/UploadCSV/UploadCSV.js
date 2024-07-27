@@ -10,16 +10,33 @@ const UploadCSV = () => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
 
+    // 確認モーダルを表示する関数
+    const showDeleteConfirmModal = () => {
+        return Swal.fire({
+            title: '元のCSVファイルを削除しますか？',
+            showCancelButton: true,
+            confirmButtonText: 'はい',
+            cancelButtonText: 'いいえ',
+        });
+    };
+
     // アップロードディレクトリをクリアする非同期関数
+    const clearUploads = async () => {
+        try {
+            await axios.post('http://localhost:5000/clear-uploads');
+        } catch (error) {
+            console.error('Failed to clear uploads directory:', error);
+        }
+    };
+
     useEffect(() => {
-        const clearUploads = async () => {
-            try {
-                await axios.post('http://localhost:5000/clear-uploads');
-            } catch (error) {
-                console.error('Failed to clear uploads directory:', error);
+        const confirmAndClearUploads = async () => {
+            const result = await showDeleteConfirmModal();
+            if (result.isConfirmed) {
+                await clearUploads();
             }
         };
-        clearUploads();
+        confirmAndClearUploads();
     }, []);
 
     // ファイルが選択された時の処理
@@ -97,8 +114,8 @@ const UploadCSV = () => {
             navigate('/data-info');
         } else {
             Swal.fire({
-                icon: 'warning',
-                title: '警告',
+                icon: 'error',
+                title: 'エラー',
                 text: 'CSVファイルをアップロードしてください',
             });
         }

@@ -9,9 +9,12 @@ import ColumnDetail from './components/ColumnDetail/ColumnDetail';
 import FeatureCreation from './components/FeatureCreation/FeatureCreation';
 import MissingValueImputation from './components/MissingValueImputation/MissingValueImputation';
 
+import Header from './components/Header';
+
 function App() {
   return (
     <BrowserRouter>
+      <Header />
       <Routes>
         <Route path='/fetch' element={<Fetch />} />
         <Route path='/upload-csv' element={<UploadCSV />} />

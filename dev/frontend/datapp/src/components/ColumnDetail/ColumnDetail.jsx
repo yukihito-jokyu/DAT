@@ -49,6 +49,10 @@ function ColumnDetail() {
         navigate('/data-info');
     };
 
+    const handleBack = () => {
+        navigate('/data-info');
+    };
+
     if (loading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -58,29 +62,44 @@ function ColumnDetail() {
     }
 
     return (
-        <Box p={3} display="flex" justifyContent="center" alignItems="center">
-            <Card>
-                <CardContent>
-                    <Typography variant="h4" gutterBottom>{columnName} の詳細</Typography>
-                    {type === 'quantitative' && (
-                        <>
-                            <Typography variant="h6">カテゴリカルデータに変更しますか？</Typography>
-                            <RadioGroup value={category} onChange={handleChange}>
-                                <FormControlLabel value="yes" control={<Radio />} label="はい" />
-                                <FormControlLabel value="no" control={<Radio />} label="いいえ" />
-                            </RadioGroup>
-                            <Button variant="contained" color="primary" onClick={handleSubmit} style={{ marginTop: '16px' }}>
-                                決定
-                            </Button>
-                        </>
-                    )}
-                    <Box mt={3}>
-                        <Typography variant="h6">特徴量分析結果</Typography>
-                        <img src={`data:image/png;base64,${image}`} alt="分析結果" />
-                    </Box>
-                </CardContent>
-            </Card>
-        </Box>
+        <>
+            <div style={{ marginTop: '64px' }}></div>
+            <Box p={3} display="flex" justifyContent="center" alignItems="center">
+                <Card>
+                    <CardContent>
+                        <Typography variant="h4" gutterBottom>{columnName} の詳細</Typography>
+                        {type === 'quantitative' && (
+                            <>
+                                <Typography variant="h6">カテゴリカルデータに変更しますか？</Typography>
+                                <RadioGroup value={category} onChange={handleChange}>
+                                    <FormControlLabel value="yes" control={<Radio />} label="はい" />
+                                    <FormControlLabel value="no" control={<Radio />} label="いいえ" />
+                                </RadioGroup>
+                                <Button variant="contained" color="primary" onClick={handleSubmit} style={{ marginTop: '16px' }}>
+                                    決定
+                                </Button>
+                            </>
+                        )}
+                        <Box mt={3}>
+                            <Typography variant="h6">特徴量分析結果</Typography>
+                            <img
+                                src={`data:image/png;base64,${image}`}
+                                alt="分析結果"
+                                style={{ width: '1000px', height: '900px', objectFit: 'contain' }}
+                            />
+                        </Box>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleBack}
+                            sx={{ marginTop: '16px', width: '100%' }}
+                        >
+                            戻る
+                        </Button>
+                    </CardContent>
+                </Card>
+            </Box>
+        </>
     );
 }
 

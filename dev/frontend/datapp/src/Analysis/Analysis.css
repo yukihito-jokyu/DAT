@@ -9,7 +9,7 @@
 .custom-wrapper {
   height: 100vh;
   width: 350px;
-  background-color: rgb(213, 213, 251);
+  /* background-color: rgb(213, 213, 251); */
 }
 
 /* Plt.js */
@@ -20,7 +20,13 @@
   align-items: center;
   height: 100vh;
   width: calc(100% - 800px);
-  background-color: rgb(241, 208, 208);
+  background-color: #ffffff;
+}
+
+.plt-wrapper img {
+  width: 800px;
+  height: 700px;
+  object-fit: contain;
 }
 
 /* Chat.js */
@@ -28,5 +34,5 @@
 .chat-wrapper {
   height: 100vh;
   width: 450px;
-  background-color: rgb(217, 238, 163);
+  /* background-color: rgb(217, 238, 163); */
 }
