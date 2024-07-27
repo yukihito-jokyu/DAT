@@ -11,46 +11,39 @@ p {
   margin-bottom: 50px;
 }
 
-.plt-selection .selection-wrapper {
-  width: 300px;
-  height: 30px;
-  display: flex;
+.selection-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
 
-.plt-selection .selection-wrapper p {
-  color: white;
-  font-weight: 600;
-}
-
-.plt-selection .selection-wrapper .scatter-button {
+.selection-wrapper .scatter-button,
+.selection-wrapper .histogram-button,
+.selection-wrapper .boxhidediagram-button,
+.selection-wrapper .piechart-button {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 80px;
-  margin-right: 20px;
+  width: 100px;
   height: 30px;
   border-radius: 15px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.selection-wrapper .scatter-button {
   background-color: #D75365;
 }
 
-.plt-selection .selection-wrapper .histogram-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 80px;
-  margin-right: 20px;
-  height: 30px;
-  border-radius: 15px;
+.selection-wrapper .histogram-button {
   background-color: #0883AF;
 }
 
-.plt-selection .selection-wrapper .boxhidediagram-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 80px;
-  margin-right: 20px;
-  height: 30px;
-  border-radius: 15px;
+.selection-wrapper .boxhidediagram-button {
   background-color: #2E8F75;
+}
+
+.selection-wrapper .piechart-button {
+  background-color: #FFA500;
 }

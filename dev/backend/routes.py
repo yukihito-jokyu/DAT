@@ -112,12 +112,13 @@ def setup_routes(app):
         image_data = make_pie(data)
         return jsonify({'image_data': image_data})
 
-    
+    # CSVファイルの読み込み
     @app.route('/read-csv', methods=['GET'])
     def read_csv():
         read()
         return jsonify({"message": "read csv"}), 200
-            
+    
+    # チャット機能
     @app.route('/api/chat', methods=['POST'])
     def chat():
         data = request.json
