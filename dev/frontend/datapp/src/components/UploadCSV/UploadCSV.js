@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Modal from './Modal';
-import WarningModal from './WarningModal';
-import { Box, Button, Typography, Paper, List, ListItem, Card, CardContent } from '@mui/material';
+import Swal from 'sweetalert2';
+import { Box, Button, Typography, Paper, Card, CardContent } from '@mui/material';
 
 const UploadCSV = () => {
     const [messages, setMessages] = useState([]);
-    const [showModal, setShowModal] = useState(false);
-    const [showWarningModal, setShowWarningModal] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
+    const fileInputRef = useRef(null);
     const navigate = useNavigate();
 
     // アップロードディレクトリをクリアする非同期関数
@@ -31,7 +29,7 @@ const UploadCSV = () => {
             newFileNames.push(file.name);
         });
         setSelectedFile(files[0]);
-        setShowModal(true);
+        showConfirmModal(files[0]);
     };
 
     // ファイルをアップロードする非同期関数
@@ -45,8 +43,18 @@ const UploadCSV = () => {
                 },
             });
             newMessages.push(response.data.message);
+            Swal.fire({
+                icon: 'success',
+                title: 'アップロード完了',
+                text: response.data.message,
+            });
         } catch (error) {
             newMessages.push(`ファイル ${file.name} のアップロードに失敗しました。`);
+            Swal.fire({
+                icon: 'error',
+                title: 'エラー',
+                text: `ファイル ${file.name} のアップロードに失敗しました。`,
+            });
         }
         setMessages([...messages, ...newMessages]);
     };
@@ -60,18 +68,27 @@ const UploadCSV = () => {
         }
     };
 
-    // モーダルを閉じる処理
-    const handleCloseModal = () => {
-        setShowModal(false);
+    // ファイル選択時の処理
+    const handleFileChange = (e) => {
+        const files = e.target.files;
+        if (files.length > 0) {
+            handleFiles(files);
+        }
     };
 
-    // モーダルの確認ボタンがクリックされた時の処理
-    const handleConfirmModal = () => {
-        setShowModal(false);
-        const newMessages = [];
-        if (selectedFile) {
-            uploadFile(selectedFile, newMessages);
-        }
+    // 確認モーダルを表示する処理
+    const showConfirmModal = (file) => {
+        Swal.fire({
+            title: `${file.name}をアップロードしますか？`,
+            showCancelButton: true,
+            confirmButtonText: 'はい',
+            cancelButtonText: 'いいえ',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const newMessages = [];
+                uploadFile(file, newMessages);
+            }
+        });
     };
 
     // "次へ"ボタンのクリック処理
@@ -79,12 +96,12 @@ const UploadCSV = () => {
         if (selectedFile) {
             navigate('/data-info');
         } else {
-            setShowWarningModal(true);
+            Swal.fire({
+                icon: 'warning',
+                title: '警告',
+                text: 'CSVファイルをアップロードしてください',
+            });
         }
-    };
-
-    const handleCloseWarningModal = () => {
-        setShowWarningModal(false);
     };
 
     return (
@@ -95,6 +112,7 @@ const UploadCSV = () => {
                         CSVファイルをアップロード
                     </Typography>
                     <Paper
+                        onClick={() => fileInputRef.current.click()}
                         onDrop={handleDrop}
                         onDragOver={(e) => e.preventDefault()}
                         sx={{
@@ -102,33 +120,21 @@ const UploadCSV = () => {
                             p: 4,
                             textAlign: 'center',
                             mb: 4,
+                            cursor: 'pointer',
                         }}
                     >
                         ここにCSVファイルをドラッグアンドドロップ
                     </Paper>
-                    {messages.length > 0 && (
-                        <Box>
-                            <Typography variant="h6">アップロードメッセージ:</Typography>
-                            <List>
-                                {messages.map((message, index) => (
-                                    <ListItem key={index}>{message}</ListItem>
-                                ))}
-                            </List>
-                        </Box>
-                    )}
-                    <Modal
-                        show={showModal}
-                        onClose={handleCloseModal}
-                        onConfirm={handleConfirmModal}
-                        fileName={selectedFile ? selectedFile.name : ''}
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".csv"
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
                     />
                     <Button variant="contained" color="primary" onClick={handleNext} sx={{ mt: 2, width: '100%' }}>
                         次へ
                     </Button>
-                    <WarningModal
-                        show={showWarningModal}
-                        onClose={handleCloseWarningModal}
-                    />
                 </CardContent>
             </Card>
         </Box>
