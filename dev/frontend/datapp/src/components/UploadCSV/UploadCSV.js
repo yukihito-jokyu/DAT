@@ -2,10 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Modal from './Modal';
+import WarningModal from './WarningModal';
+import { Box, Button, Typography, Paper, List, ListItem, Card, CardContent } from '@mui/material';
 
 const UploadCSV = () => {
     const [messages, setMessages] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const [showWarningModal, setShowWarningModal] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const navigate = useNavigate();
 
@@ -73,42 +76,62 @@ const UploadCSV = () => {
 
     // "次へ"ボタンのクリック処理
     const handleNext = () => {
-        navigate('/select-column');
+        if (selectedFile) {
+            navigate('/data-info');
+        } else {
+            setShowWarningModal(true);
+        }
+    };
+
+    const handleCloseWarningModal = () => {
+        setShowWarningModal(false);
     };
 
     return (
-        <>
-            <h2>CSVファイルをアップロード</h2>
-            <div
-                onDrop={handleDrop}
-                onDragOver={(e) => e.preventDefault()}
-                style={{
-                    border: '2px dashed #ccc',
-                    padding: '20px',
-                    textAlign: 'center',
-                    marginBottom: '20px',
-                }}
-            >
-                ここにCSVファイルをドラッグアンドドロップ
-            </div>
-            {messages.length > 0 && (
-                <div>
-                    <h3>アップロードメッセージ:</h3>
-                    <ul>
-                        {messages.map((message, index) => (
-                            <li key={index}>{message}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-            <Modal
-                show={showModal}
-                onClose={handleCloseModal}
-                onConfirm={handleConfirmModal}
-                fileName={selectedFile ? selectedFile.name : ''}
-            />
-            <button onClick={handleNext}>次へ</button>
-        </>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+            <Card sx={{ width: 600, p: 2 }}>
+                <CardContent>
+                    <Typography variant="h4" gutterBottom>
+                        CSVファイルをアップロード
+                    </Typography>
+                    <Paper
+                        onDrop={handleDrop}
+                        onDragOver={(e) => e.preventDefault()}
+                        sx={{
+                            border: '2px dashed #ccc',
+                            p: 4,
+                            textAlign: 'center',
+                            mb: 4,
+                        }}
+                    >
+                        ここにCSVファイルをドラッグアンドドロップ
+                    </Paper>
+                    {messages.length > 0 && (
+                        <Box>
+                            <Typography variant="h6">アップロードメッセージ:</Typography>
+                            <List>
+                                {messages.map((message, index) => (
+                                    <ListItem key={index}>{message}</ListItem>
+                                ))}
+                            </List>
+                        </Box>
+                    )}
+                    <Modal
+                        show={showModal}
+                        onClose={handleCloseModal}
+                        onConfirm={handleConfirmModal}
+                        fileName={selectedFile ? selectedFile.name : ''}
+                    />
+                    <Button variant="contained" color="primary" onClick={handleNext} sx={{ mt: 2, width: '100%' }}>
+                        次へ
+                    </Button>
+                    <WarningModal
+                        show={showWarningModal}
+                        onClose={handleCloseWarningModal}
+                    />
+                </CardContent>
+            </Card>
+        </Box>
     );
 };
 
