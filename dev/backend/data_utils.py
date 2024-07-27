@@ -245,17 +245,17 @@ def calculate_feature_importance(model, X):
     return feature_importance
 
 def plot_feature_importance(feature_importance, top_n=20):
-    # plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(12, 8))
     top_n = min(top_n, len(feature_importance))
     sns.barplot(x='importance', y='feature', data=feature_importance.head(top_n))
     plt.title(f'Top {top_n} Feature Importance')
     plt.xlabel('Importance')
     plt.ylabel('Feature')
-    plt.tight_layout()
+    # plt.tight_layout()
     # plt.show()
     # バイナリデータにエンコード
     buf = io.BytesIO()
-    plt.savefig(buf,format="png")
+    plt.savefig(buf,format="png", dpi=100, bbox_inches='tight')
     buf.seek(0)
     plot_url = base64.b64encode(buf.getvalue()).decode()
     return plot_url
