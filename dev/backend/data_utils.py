@@ -91,13 +91,23 @@ def get_data_info():
 # 欠損値があるカラムを取得
 def get_miss_columns():
     df = get_df()
-    miss_columns = df.columns[df.isnull().any()].to_list()
+    quantitative_miss_list = []
+    qualitative_miss_list = []
+
+    for col in df.columns:
+        if df[col].isnull().any():
+            if df[col].dtype == 'int64' or df[col].dtype == 'float64':
+                quantitative_miss_list.append(col)
+            else:
+                qualitative_miss_list.append(col)
 
     send_data = {
-        "column_name": miss_columns
+        "quantitative_miss_list": quantitative_miss_list,
+        "qualitative_miss_list": qualitative_miss_list
     }
 
     return send_data
+
 
 
 # 数値データからカテゴリカルデータへ変換
