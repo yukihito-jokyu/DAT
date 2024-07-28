@@ -16,6 +16,26 @@ import numpy as np
 import pandas as pd
 import io
 
+import json
+
+# データ型情報を読み込む関数
+def load_dtype(df, filename):
+    try:
+        with open(filename, 'r') as f:
+            dtypes = json.load(f)
+        for col, dtype in dtypes.items():
+            if dtype == 'object':
+                df[col] = df[col].astype(str)
+            elif dtype == 'int64':
+                df[col] = df[col].astype(int)
+    except:
+        pass
+
+def get_df():
+    df = pd.read_csv('./uploads/demo.csv')
+    load_dtype(df, './uploads/dtypes.json')
+    return df
+
 #量的変数のカラムを返す
 def read_quantitative():
     passes=read_folder()
@@ -24,6 +44,7 @@ def read_quantitative():
     print(passes)
     encoding=check_encoding(passes[0])
     df=pd.read_csv(passes[0], encoding=encoding)
+    df = get_df()
     columns=df.columns.values
     # apply関数で自作関数を適用
     is_numeric_col = df.apply(is_numeric)
@@ -41,6 +62,7 @@ def read_qualitative():
     # list={}
     encoding=check_encoding(passes[0])
     df=pd.read_csv(passes[0], encoding=encoding)
+    df = get_df()
     columns=df.columns.values
     # apply関数で自作関数を適用
     is_numeric_col = df.apply(is_numeric)
@@ -95,6 +117,7 @@ def plot_scatter(jsons):
     passes=read_folder()
     encoding=check_encoding(passes[0])
     df=pd.read_csv(passes[0], encoding=encoding)
+    df = get_df()
     print(df)
     if list_columns['target']=='None':
         print("regplot")
@@ -126,6 +149,7 @@ def plot_hist(jsons):
     passes=read_folder()
     encoding=check_encoding(passes[0])
     df=pd.read_csv(passes[0], encoding=encoding)
+    df = get_df()
     print(df)
     if list_columns['target']=='None':
         hist_plot = sns.histplot(x=list_columns['variable'],data=df)
@@ -152,6 +176,7 @@ def plot_box(jsons):
     passes=read_folder()
     encoding=check_encoding(passes[0])
     df=pd.read_csv(passes[0], encoding=encoding)
+    df = get_df()
     # プロット
     box_plot = sns.boxenplot(x=x, y=y, data=df)
     # バイナリデータにエンコード
