@@ -3,7 +3,7 @@ import axios from 'axios';
 import './Analysis.css';
 import './Chat.css';
 
-function Chat() {
+function Chat({ image }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
