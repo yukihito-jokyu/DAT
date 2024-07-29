@@ -10,6 +10,7 @@ from flask_cors import CORS
 import google.generativeai as genai
 
 from dotenv import load_dotenv
+import json
 
 # 環境変数を読み込む
 load_dotenv()
@@ -39,6 +40,12 @@ def setup_routes(app):
         
         file_path = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(file_path)
+        # 空の辞書を作成
+        empty_json = {}
+
+        # ファイルに書き込む
+        with open('dtypes.json', 'w') as file:
+            json.dump(empty_json, file)
         return jsonify({"message": f"File {file.filename} uploaded successfully"}), 200
 
     @app.route('/clear-uploads', methods=['POST'])
@@ -47,6 +54,12 @@ def setup_routes(app):
         if os.path.exists(UPLOAD_FOLDER):
             shutil.rmtree(UPLOAD_FOLDER)
         os.makedirs(UPLOAD_FOLDER)
+        # 空の辞書を作成
+        empty_json = {}
+
+        # ファイルに書き込む
+        with open('dtypes.json', 'w') as file:
+            json.dump(empty_json, file)
         return jsonify({"message": "Uploads directory cleared"}), 200    
 
     
@@ -164,3 +177,38 @@ def setup_routes(app):
         methods = data['complementary_methods']
         impute_categorical(column, methods)
         return jsonify({'message': 'complement categorical successfully'})
+    
+    # geminiの画像分析
+    @app.route('/gemini/image', methods=['POST'])
+    def gemini_image():
+        data = request.get_json()
+        image_data = data['image_data']
+        cookie_picture = {
+            'mime_type': 'image/png',
+            'data': image_data
+        }
+        prompt = 'この写真について教えて(日本語で)'
+        response = model.generate_content(
+            contents=[prompt, cookie_picture],
+            generation_config=genai.types.GenerationConfig(
+                candidate_count=1,
+                max_output_tokens=100,
+                temperature=1.0
+            )
+        )
+        return jsonify({'text': response.text})
+    
+    # geminiの分析
+    @app.route('/gemini/text', methods=['POST'])
+    def gemini_text():
+        data = request.get_json()
+        message = data['text']
+        response = model.generate_content(
+            contents=message,
+            generation_config=genai.types.GenerationConfig(
+                candidate_count=1,
+                max_output_tokens=100,
+                temperature=1.0
+            )
+        )
+        return jsonify({'text': response.text})

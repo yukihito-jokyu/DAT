@@ -18,6 +18,8 @@ from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 from sklearn.impute import KNNImputer
 
+import json
+
 def format_value(value):
     if isinstance(value, float):
         if abs(value) >= 10:
@@ -36,7 +38,9 @@ def convert_to_serializable(obj):
 
 
 def get_df():
-    return pd.read_csv('./uploads/demo.csv')
+    df = pd.read_csv('./uploads/demo.csv')
+    load_dtype(df, './uploads/dtypes.json')
+    return df
 
 def entropy(series):
     value_counts = series.value_counts(normalize=True)
@@ -115,7 +119,8 @@ def change_umeric_to_categorical(data):
     column = data['column_name']
     df = get_df()
     df[column] = df[column].astype(str)
-    df.to_csv('./uploads/demo.csv', index=False)
+    save_dtype(df, './uploads/dtypes.json')
+    df.to_csv('./uploads/demo2.csv', index=False)
 
 
 # 円グラフの可視化
@@ -145,7 +150,7 @@ def make_pie(data):
     # タイトルの表示
     title = f'Distribution of {column}'
     fig.suptitle(title, fontsize=16)
-    plt.tight_layout()
+    # plt.tight_layout()
     # バイナリデータにエンコード
     buf = io.BytesIO()
     plt.savefig(buf,format="png")
@@ -434,11 +439,36 @@ def impute_categorical(column, method='mode'):
         print(f"警告: カラム '{column}' はカテゴリカル型または文字列型ではありません。補完は行われません。")
     df_imputed.to_csv('./uploads/demo.csv', index=False)
     
+# データ型情報を保存する関数
+def save_dtype(df, filename):
+    dtypes = {col: str(dtype) for col, dtype in df.dtypes.items()}
+    with open(filename, 'w') as f:
+        json.dump(dtypes, f)
 
+# データ型情報を読み込む関数
+def load_dtype(df, filename):
+    try:
+        with open(filename, 'r') as f:
+            dtypes = json.load(f)
+        for col, dtype in dtypes.items():
+            if dtype == 'object':
+                df[col] = df[col].astype(str)
+            elif dtype == 'int64':
+                df[col] = df[col].astype(int)
+    except:
+        pass
 
 if __name__ == '__main__':
-    data = {'formula': ['2', 'multiplication', 'DailyRate', 'addition', 'Age', 'subtraction', 'YearsInCurrentRole'],
-            'new_column_name': 'new_column'
-            }
-    make_feature_value(data)
+    df = pd.read_csv('./uploads/demo.csv')
+    column = 'Attrition'
+    print(df[column].dtype)
+    df[column] = df[column].astype(str)
+    print(df[column].dtype)
+    # データ型情報を保存
+    save_dtype(df, './uploads/dtypes.json')
+    df.to_csv('./uploads/demo3.csv', index=False)
+    df = pd.read_csv('./uploads/demo3.csv')
+    # 型情報を再適用
+    load_dtype(df, './uploads/dtypes.json')
+    print(df[column].dtype)
 
