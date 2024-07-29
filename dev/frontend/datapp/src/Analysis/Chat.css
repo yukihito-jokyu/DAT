@@ -59,3 +59,20 @@
 .chat-input button:hover {
     background-color: #0056b3;
 }
+
+.chat-input .analyze-button {
+    flex: 1;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    text-align: center;
+}
+
+.chat-input .analyze-button:hover {
+    background-color: #0056b3;
+}

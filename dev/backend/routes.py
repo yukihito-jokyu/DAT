@@ -18,7 +18,7 @@ load_dotenv()
 # APIキーを設定
 GENAI_API_KEY = os.getenv('GENAI_API_KEY')
 genai.configure(api_key=GENAI_API_KEY)
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 def setup_routes(app):
     @app.route('/', methods=['GET'])
@@ -187,12 +187,11 @@ def setup_routes(app):
             'mime_type': 'image/png',
             'data': image_data
         }
-        prompt = 'この写真について教えて(日本語で)'
+        prompt = 'この写真について教えて(日本語で)\n'
         response = model.generate_content(
             contents=[prompt, cookie_picture],
             generation_config=genai.types.GenerationConfig(
                 candidate_count=1,
-                max_output_tokens=100,
                 temperature=1.0
             )
         )
@@ -207,7 +206,6 @@ def setup_routes(app):
             contents=message,
             generation_config=genai.types.GenerationConfig(
                 candidate_count=1,
-                max_output_tokens=100,
                 temperature=1.0
             )
         )
