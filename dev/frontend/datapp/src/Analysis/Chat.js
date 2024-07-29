@@ -25,7 +25,7 @@ function Chat({ image }) {
 
     // サーバーにメッセージを送信して応答をリストに格納
     try {
-      const response = await axios.post('http://localhost:5000/gemini/text', { message: input });
+      const response = await axios.post('http://localhost:5000/api/chat', { message: input });
       const botMessage = { sender: 'bot', text: response.data.reply };
       setMessages((prevMessages) => [...prevMessages, newMessage, botMessage]);
     } catch (error) {

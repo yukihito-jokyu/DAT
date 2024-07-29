@@ -18,7 +18,6 @@ load_dotenv()
 # APIキーを設定
 GENAI_API_KEY = os.getenv('GENAI_API_KEY')
 genai.configure(api_key=GENAI_API_KEY)
-model = genai.GenerativeModel('gemini-1.5-flash')
 
 def setup_routes(app):
     @app.route('/', methods=['GET'])
@@ -135,6 +134,7 @@ def setup_routes(app):
     # チャット機能
     @app.route('/api/chat', methods=['POST'])
     def chat():
+        model = genai.GenerativeModel('gemini-pro')
         data = request.json
         message = data.get('message')
         if not message:
@@ -181,6 +181,7 @@ def setup_routes(app):
     # geminiの画像分析
     @app.route('/gemini/image', methods=['POST'])
     def gemini_image():
+        model = genai.GenerativeModel('gemini-1.5-flash')
         data = request.get_json()
         image_data = data['image_data']
         cookie_picture = {
@@ -197,16 +198,16 @@ def setup_routes(app):
         )
         return jsonify({'text': response.text})
     
-    # geminiの分析
-    @app.route('/gemini/text', methods=['POST'])
-    def gemini_text():
-        data = request.get_json()
-        message = data['text']
-        response = model.generate_content(
-            contents=message,
-            generation_config=genai.types.GenerationConfig(
-                candidate_count=1,
-                temperature=1.0
-            )
-        )
-        return jsonify({'text': response.text})
+    # # geminiの分析
+    # @app.route('/gemini/text', methods=['POST'])
+    # def gemini_text():
+    #     data = request.get_json()
+    #     message = data['message']
+    #     response = model.generate_content(
+    #         contents=message,
+    #         generation_config=genai.types.GenerationConfig(
+    #             candidate_count=1,
+    #             temperature=1.0
+    #         )
+    #     )
+    #     return jsonify({'text': response.text})
