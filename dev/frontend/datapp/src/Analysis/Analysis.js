@@ -53,7 +53,7 @@ function Analysis() {
         setImage={setImage}
       />
       <Plt image={image} />
-      <Chat />
+      <Chat image={image} />
     </div>
   );
 }
