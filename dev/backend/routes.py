@@ -43,8 +43,8 @@ def setup_routes(app):
         empty_json = {}
 
         # ファイルに書き込む
-        with open('dtypes.json', 'w') as file:
-            json.dump(empty_json, file)
+        with open('dtypes.json', 'w') as json_file:
+            json.dump(empty_json, json_file)
         return jsonify({"message": f"File {file.filename} uploaded successfully"}), 200
 
     @app.route('/clear-uploads', methods=['POST'])
