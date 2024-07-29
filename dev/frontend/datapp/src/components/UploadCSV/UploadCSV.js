@@ -140,7 +140,7 @@ const UploadCSV = () => {
                             cursor: 'pointer',
                         }}
                     >
-                        ここにCSVファイルをドラッグアンドドロップ
+                        ここをタッチまたはCSVファイルをドラッグアンドドロップ
                     </Paper>
                     <input
                         ref={fileInputRef}

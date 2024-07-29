@@ -8,14 +8,25 @@ function Chat({ image }) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [isAnalysisMode, setIsAnalysisMode] = useState(true);
+  const [analyzeMessage, setAnalyzeMessage] = useState(null);
 
   // 画像が変更されるたびに解析ボタン復活
   useEffect(() => {
     setIsAnalysisMode(true);
     setMessages([]);
+    setAnalyzeMessage(null);
   }, [image]);
 
-  // メッセージを送信する関数
+  // メッセージリストを文字列に変換する関数
+  const getCombinedMessages = (messages) => {
+    return messages.map(msg => `${msg.sender}: ${msg.text}`).join('\n');
+  };
+
+  // 最新の5組のメッセージを取得する関数
+  const getLastTenMessages = (messages) => {
+    return messages.slice(-10);
+  };
+
   const sendMessage = async () => {
     if (input.trim() === '' || loading) return;
 
@@ -23,9 +34,21 @@ function Chat({ image }) {
 
     setLoading(true);
 
-    // サーバーにメッセージを送信して応答をリストに格納
     try {
-      const response = await axios.post('http://localhost:5000/api/chat', { message: input });
+      // 現在のメッセージリストに新しいメッセージを追加
+      const updatedMessages = [...messages, newMessage];
+
+      // 最新の10組のメッセージを取得
+      const lastTenMessages = getLastTenMessages(updatedMessages);
+
+      // analyzeMessageがある場合は含める
+      const combinedMessages = analyzeMessage
+        ? getCombinedMessages([analyzeMessage, ...lastTenMessages])
+        : getCombinedMessages(lastTenMessages);
+
+      // 結合したメッセージをサーバーに送信
+      const response = await axios.post('http://localhost:5000/api/chat', { message: combinedMessages });
+
       const botMessage = { sender: 'bot', text: response.data.reply };
       setMessages((prevMessages) => [...prevMessages, newMessage, botMessage]);
     } catch (error) {
@@ -44,6 +67,7 @@ function Chat({ image }) {
       const response = await axios.post('http://localhost:5000/gemini/image', { image_data: image });
       const botMessage = { sender: 'bot', text: response.data.text };
       setMessages((prevMessages) => [...prevMessages, botMessage]);
+      setAnalyzeMessage(botMessage);
       setIsAnalysisMode(false);
     } catch (error) {
       console.error('Error analyzing image:', error);
