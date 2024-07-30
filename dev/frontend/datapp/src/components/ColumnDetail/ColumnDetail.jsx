@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, RadioGroup, FormControlLabel, Radio, CircularProgress, Button, Card, CardContent } from '@mui/material';
+import Swal from 'sweetalert2';
 
 function ColumnDetail() {
     const { columnName, type } = useParams();
@@ -21,7 +22,7 @@ function ColumnDetail() {
             const data = await response.json();
             setImage(data.image_data);
             setLoading(false);
-            console.log(data.image_data)
+            console.log(data.image_data);
         };
 
         fetchImage();
@@ -41,9 +42,19 @@ function ColumnDetail() {
                 body: JSON.stringify({ column_name: columnName }),
             });
             if (response.ok) {
-                alert('カテゴリカルデータに変更しました');
+                Swal.fire({
+                    title: '成功',
+                    text: 'カテゴリカルデータに変更しました',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
             } else {
-                alert('変更に失敗しました');
+                Swal.fire({
+                    title: 'エラー',
+                    text: '変更に失敗しました',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             }
         }
         navigate('/data-info');
